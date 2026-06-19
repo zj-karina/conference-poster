@@ -82,12 +82,17 @@ color:
 that fits the vibe (rounded display for cute, mono for techy, serif for classic, condensed
 for editorial). Keep body legible from a few feet.
 
-**3. Find real themed art and compose HERO-first (the wow factor).** Web-search for
-**transparent PNGs** of the theme's signature elements: `"<theme>" transparent png`, on
-asset hosts (pngimg.com, openclipart.org, Wikimedia Commons, stickpng). `WebFetch` the
-gallery page to extract direct image URLs, then download a spread with
-`scripts/fetch_image.py out.png <url1> <url2> ...` (preserves transparency); eyeball a
-contact sheet. Then compose like a designer, not by sprinkling:
+**3. Get themed art and compose HERO-first (the wow factor).** Two sources:
+   - **Best — generate it (fal.ai Nano Banana Pro), if the user gave a key.** Bespoke,
+     high-quality, copyright-safe, exactly the subject you want, on a transparent background:
+     `FAL_KEY=… python3 scripts/gen_asset_fal.py "<subject, e.g. a regal fluffy caracal
+     mascot, full body>" hero.png --resolution 2K --aspect 3:4`. Generate the hero + a couple
+     supporting pieces. (The script appends a transparency instruction and outputs PNG.)
+   - **Fallback — find it on the web** (no key, or generation declined). Web-search
+     **transparent PNGs**: `"<theme>" transparent png`, on asset hosts (pngimg.com,
+     openclipart.org, Wikimedia Commons, stickpng). `WebFetch` the gallery page to extract
+     direct image URLs, then download with `scripts/fetch_image.py out.png <url1> <url2> ...`.
+   Eyeball a contact sheet either way, then compose like a designer, not by sprinkling:
    - **One HERO image, large** — the single most iconic asset (a character, a group shot, a
      crest), placed in the biggest available whitespace (beside or above the centerpiece, or
      a header mascot slot). This carries the theme; make it as big as the whitespace allows

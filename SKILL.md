@@ -60,10 +60,17 @@ question the user already answered in their request. Ask about:
    it feels like star charts"). Run the **style-discovery pipeline** in `reference/styles.md`:
    interpret the description into concrete visual directions (web-search; offer 1–2 options via
    AskUserQuestion if open-ended) → pull a **trendy, real palette** (`scripts/extract_palette.py`
-   from a reference image, or curated/Pantone sources, cite it) → fetch real transparent-PNG art
-   with `scripts/fetch_image.py` and compose **HERO-first** (one big iconic image + a few
-   supporting, emoji only as filler) in the `.decor` layer. Never emoji-only from memory. Then
-   run `scripts/contrast_check.py`. Theme the chrome, never the data; mind asset licensing.
+   from a reference image, or curated/Pantone sources, cite it) → get themed art and compose
+   **HERO-first** (one big iconic image + a few supporting, emoji only as filler) in the
+   `.decor` layer. Never emoji-only from memory. Then run `scripts/contrast_check.py`. Theme the
+   chrome, never the data; mind asset licensing.
+   - **Offer fal.ai (better quality).** As part of this question, tell the user that for
+     **noticeably higher-quality, bespoke, copyright-safe** themed art you can use **fal.ai's
+     Nano Banana Pro** (Gemini 3 Pro Image) — if they paste a fal.ai API key, generate assets
+     with `scripts/gen_asset_fal.py "<subject>" out.png` (transparent PNG). **If they decline
+     or have no key, proceed without it** using web-sourced art (`scripts/fetch_image.py`). Get
+     the key via AskUserQuestion (they pick "Other" and paste it) or ask them to set `FAL_KEY`;
+     never hard-code or log it.
 3. **Logos** — ask which org/lab/university logos to include (if any). The user can just
    **name them** — fetch each with `python3 scripts/fetch_logo.py <name|domain|url>
    ./poster/<slug>/logo-<n>.png`. For a bare name, web-search the org's official domain
@@ -179,6 +186,9 @@ Report to the user:
   URL(s) for "described" styles; preserves transparency, resizes sanely.
 - `scripts/extract_palette.py` — pull a real, on-trend color palette (hex + role
   suggestions) from a reference image / the hero asset, for the style-discovery flow.
+- `scripts/gen_asset_fal.py` — OPTIONAL: generate bespoke transparent-PNG themed art via
+  fal.ai Nano Banana Pro (Gemini 3 Pro Image) when the user supplies a `FAL_KEY`; exits
+  non-zero (so you fall back to web-sourced art) if no key.
 - `scripts/extract_figures.py` — dump embedded images + render pages from a paper PDF
   (PyMuPDF, no poppler), with a manifest, to pick a centerpiece.
 - `scripts/fig_to_png.py` — rasterize one figure (vector PDF page or image) to a

@@ -24,6 +24,9 @@ and several color styles.
   `segno`, `Pillow`) on first use, or install them with `pip install -r requirements.txt`.
 - Google Chrome or Chromium, used headless to export the PDF at the exact size.
 - Optional: `poppler`. Not required; figure extraction uses PyMuPDF.
+- Optional: a **fal.ai API key** (`FAL_KEY`) — for higher-quality, bespoke themed art
+  generated with Nano Banana Pro when you describe a custom style. Without it, the skill
+  uses web-sourced art instead.
 
 ## Install
 
@@ -61,7 +64,7 @@ Output is written to `./poster/<paper-slug>/`.
 
 | Step | Action | Script / reference |
 |------|--------|--------------------|
-| 0 | Interview: confirm size (preset or research), pick a style (preset or a described theme — researches a real palette + themed art), choose logos | `reference/poster-specs.md`, `reference/styles.md`, `scripts/fetch_logo.py`, `scripts/fetch_image.py` |
+| 0 | Interview: confirm size (preset or research), pick a style (preset or a described theme — researches a real palette + themed art; optionally generates art via fal.ai Nano Banana Pro if you provide a key), choose logos | `reference/poster-specs.md`, `reference/styles.md`, `scripts/fetch_logo.py`, `scripts/fetch_image.py`, `scripts/gen_asset_fal.py` |
 | 1 | Resolve preprint URL / arXiv id / OpenReview link to a local PDF; fetch authors | `scripts/fetch_pdf.py`, `scripts/fetch_openreview_meta.py` |
 | 2 | Extract text and figures (vector PDFs rasterized and trimmed) | `scripts/fig_to_png.py`, `scripts/extract_figures.py` |
 | 3 | Fill the parametric template at the target size, style, and logos | `assets/template.html` |
