@@ -70,9 +70,11 @@ def main():
     override = (
         "<style>html,body{background:transparent!important}"
         ".poster{background:transparent!important}"
-        ".header{background:var(--bg)!important;box-shadow:0 0 0 .45in var(--bg)!important}"
-        ".footer{background:var(--bg)!important;box-shadow:0 0 0 .55in var(--bg)!important}"
-        ".caption{background:var(--panel)!important;box-shadow:0 0 0 .14in var(--panel)!important}"
+        # opaque fills extended only UP (header) / DOWN (footer) — never sideways — so the
+        # side margins stay clear for big decoration, while offset duplicate text is covered
+        ".header{background:var(--bg)!important;box-shadow:0 -.5in 0 .04in var(--bg)!important}"
+        ".footer{background:var(--bg)!important;box-shadow:0 .6in 0 .04in var(--bg)!important}"
+        ".caption{background:var(--panel)!important;box-shadow:0 0 0 .12in var(--panel)!important}"
         "</style>")
     html_t = html.replace("</head>", override + "\n</head>", 1)
     d = os.path.dirname(os.path.abspath(a["html"]))
