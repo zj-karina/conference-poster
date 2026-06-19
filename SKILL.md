@@ -53,8 +53,13 @@ question the user already answered in their request. Ask about:
    vetting in that file), convert units to inches, and note board/tape/deadline rules.
    A wrong size = a wasted print, so always confirm. Fallback: A0 portrait (33.1×46.8 in),
    flagged.
-2. **Style / palette** — offer the named presets in `reference/styles.md` (Indigo default,
-   Crimson, Forest, Slate mono, Ocean/ICML blue, Sunset) and the optional dark band. The
+2. **Style — first ask the mode: "Clean academic" vs "Themed / fun".** Default to
+   **clean academic** unless the user signals they want a vibe. Clean academic = a sober
+   preset palette (Indigo / Ocean-ICML blue / Slate mono / Crimson), **no `.decor`, no emoji,
+   no slang**, logos only, lots of whitespace (see "Clean academic mode" in
+   `reference/styles.md`). Only if they pick themed/fun do the rest of this step.
+   For **themed/fun**: offer the named presets in `reference/styles.md` (Indigo, Crimson,
+   Forest, Slate mono, Ocean/ICML blue, Sunset, the dark band). The
    user may also **describe a style any way they like** — a named aesthetic ("Sailor Moon"),
    a vibe, or even **an association with the paper** ("my work is about weight-space geometry,
    it feels like star charts"). Run the **style-discovery pipeline** in `reference/styles.md`:

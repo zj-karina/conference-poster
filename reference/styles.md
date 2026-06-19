@@ -53,6 +53,20 @@ Playful pink + blue + gold. Use a 3-stop band gradient for the full effect.
    border:.05in solid var(--gold); */
 ```
 
+## Clean academic mode (the serious default)
+
+Themed decoration is **opt-in**. If the user wants a normal, professional academic poster —
+or just doesn't ask for anything playful — do this and DON'T run the discovery pipeline:
+- Pick a sober preset (Indigo / Ocean-ICML blue / Slate mono / Crimson), or match the
+  centerpiece figure's color.
+- **No `.decor` layer, no emoji, no slang/jokes.** Keep the worked-example tone neutral.
+- Logos only (real org logos via `fetch_logo.py`), generous whitespace, crisp hierarchy.
+- Still run `contrast_check.py`.
+
+Make this an explicit choice in the opening interview ("Clean academic" vs "Themed/fun"),
+and default to clean unless the user signals they want a vibe. Everything below is only for
+the themed/fun path.
+
 ## Style discovery (turn ANY description into a real, on-trend design)
 
 The input can be **anything**: a named aesthetic ("Sailor Moon", "cyberpunk"), a vibe
@@ -93,19 +107,29 @@ for editorial). Keep body legible from a few feet.
      openclipart.org, Wikimedia Commons, stickpng). `WebFetch` the gallery page to extract
      direct image URLs, then download with `scripts/fetch_image.py out.png <url1> <url2> ...`.
    Eyeball a contact sheet either way, then compose like a designer, not by sprinkling:
+   - **BE BOLD with size — this is the #1 mistake.** Timid little corner stickers look weak
+     and don't read across a room. Assets should be **prominent**: a HERO at least
+     ~4–6 in on its long side, supporting pieces ~2.5–3.5 in. If you catch yourself placing
+     1–2 in images, they're too small — go bigger.
    - **One HERO image, large** — the single most iconic asset (a character, a group shot, a
-     crest), placed in the biggest available whitespace (beside or above the centerpiece, or
-     a header mascot slot). This carries the theme; make it as big as the whitespace allows
-     without touching text/figures. (A poster reads as "designed" because of one confident
-     hero, not ten small stickers.)
-   - **2–4 supporting pieces, medium**, framing the content in the side/corner whitespace.
+     crest). Make it genuinely big and place it where it commands attention. It's fine for a
+     hero to **bleed off the page edge** or sit partly behind a panel's empty corner — that
+     reads as intentional design.
+   - **2–4 supporting pieces, medium (not tiny)**, framing the content in the side/corner
+     whitespace; let them overlap the page margin/edges rather than shrinking.
    - **Emoji (🌈⭐✨) only as light filler** between the real images — never the main event.
    Place each as `.decor img` with inline `top/left/right/bottom` + `width`; vary size and a
    slight `transform:rotate(...)`. A subtle on-theme background tint (from the extracted
    palette) ties it together.
 
-If the layout is content-dense (little whitespace), tell the user the hero can only be
-medium unless they accept a more decoration-forward layout (slightly less content area).
+**Where to put a big hero when the layout is content-dense.** The default grid has little
+whitespace, so don't cram a hero into a 1.5 in gap. Instead:
+- **Reserve room:** widen the `.poster` side `padding`, or add a slim outer band, so a tall
+  hero can run down a margin at ~4–6 in wide.
+- **Bleed it:** anchor the hero to a page corner/edge and let part of it run off-canvas
+  (`overflow:hidden` on `.poster` clips cleanly) — big and striking without covering data.
+- Or offer the user a **decoration-forward layout** (slightly smaller content area) in
+  exchange for a full-size hero. State the trade-off; let them choose.
 
 **4. Keep content untouched and legible.** Theme the chrome, never the data. Decor must not
 cover text, figures, or numbers — place in true whitespace; if unsure, fewer/larger pieces
