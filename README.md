@@ -1,7 +1,8 @@
-# conference-poster
+# my-little-poster
 
-A skill for Claude Code that generates a print-ready academic conference poster from a
-paper.
+A Claude Code skill that generates a print-ready academic conference poster from a paper —
+clean academic by default, or fully themed (it can even paint your poster in a described
+style via fal.ai Nano Banana Pro).
 
 Input: a paper (preprint URL or local PDF) and a target venue (conference/workshop name
 or explicit dimensions). Output:
