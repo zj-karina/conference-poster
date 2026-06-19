@@ -61,9 +61,19 @@ def main():
     from PIL import Image
 
     html = open(a["html"]).read()
-    # force a transparent background so only the real content is opaque
-    override = ("<style>html,body{background:transparent!important}"
-                ".poster{background:transparent!important}</style>")
+    # strip HTML comments (a malformed one can leak as visible text on a transparent bg)
+    html = re.sub(r"<!--.*?-->", "", html, flags=re.S)
+    # Transparent page, but give every TEXT-bearing block an opaque, slightly-extended
+    # fill so it covers the image model's offset duplicate text (no ghosting). Panels are
+    # already opaque; header/footer/captions are not, so back them explicitly. Empty grid
+    # gaps + outer margins stay transparent, so the decoration still shows there.
+    override = (
+        "<style>html,body{background:transparent!important}"
+        ".poster{background:transparent!important}"
+        ".header{background:var(--bg)!important;box-shadow:0 0 0 .45in var(--bg)!important}"
+        ".footer{background:var(--bg)!important;box-shadow:0 0 0 .55in var(--bg)!important}"
+        ".caption{background:var(--panel)!important;box-shadow:0 0 0 .14in var(--panel)!important}"
+        "</style>")
     html_t = html.replace("</head>", override + "\n</head>", 1)
     d = os.path.dirname(os.path.abspath(a["html"]))
     tmp = tempfile.NamedTemporaryFile("w", suffix=".html", dir=d, delete=False)
