@@ -1,0 +1,6 @@
+# Python deps for the conference-poster scripts.
+# The scripts auto-install these on first use, but you can preinstall them:
+#   pip install -r requirements.txt
+pymupdf>=1.23     # PDF text/figure extraction + render (no poppler needed)
+segno>=1.5        # QR code generation
+Pillow>=9.0       # figure whitespace-trim in fig_to_png.py

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Conference Poster</title>
+<!--
+  ============================================================================
+  CONFERENCE POSTER  —  billboard style (Morrison "Better Poster")
+  ----------------------------------------------------------------------------
+  SET THE SIZE FOR YOUR CONFERENCE (two places, must match):
+   1) :root  --w / --h   (poster box size, e.g. 24in/36in, or 84.1cm/118.9cm A0)
+   2) @page  size:<W> <H> (the printed page; MUST equal --w --h, same units)
+  Portrait = height > width (e.g. 24in x 36in). Landscape = width > height
+  (e.g. 48in x 36in) — for landscape also widen .support to 3 cols (see note).
+  HOW TO EDIT:
+   - Open this file in Chrome. All text is contenteditable: click and type.
+   - Swap figures by replacing the image files referenced below (keep names or
+     update the src). Use high-res images (>=150-300 DPI at print size).
+   - Tune look via the CSS variables in :root (accent color, type sizes).
+   - Re-export to PDF: bash scripts/export_pdf.sh index.html poster.pdf [W_in H_in]
+  Sections to fill are marked with  <!-- FILL: ... -->.  The content below is a
+  worked interpretability example — replace it with the real paper.
+  ============================================================================
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* ---- physical size: SET to your conference spec (keep @page in sync) ---- */
+    --w: 24in;   /* width  — e.g. 24in (ICML wksp), 33.1in/84.1cm (A0), 48in (landscape) */
+    --h: 36in;   /* height — e.g. 36in (ICML wksp), 46.8in/118.9cm (A0) */
+
+    /* ---- palette (tweak freely) ---- */
+    --accent:   #3b2fb0;   /* primary accent (bands, rules)        */
+    --accent-2: #6a5cff;   /* secondary accent (highlights)        */
+    --ink:      #14151a;   /* main text                            */
+    --muted:    #5b6072;   /* secondary text                       */
+    --bg:       #ffffff;   /* poster background                    */
+    --panel:    #f4f5fb;   /* light panel fill                     */
+    --band-ink: #ffffff;   /* text on accent band                  */
+
+    /* ---- type scale (points; readable from 4-6 ft) ---- */
+    --fs-title:   84pt;
+    --fs-takeaway:118pt;
+    --fs-head:    52pt;
+    --fs-body:    27pt;
+    --fs-small:   21pt;
+    --fs-authors: 34pt;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{ background:#888; }            /* gray screen backdrop, never prints */
+  @page{ size:24in 36in; margin:0; }   /* MUST equal --w --h above (same units) */
+  @media print{ html,body{ background:#fff; } }
+
+  body{ font-family:'Inter','Helvetica Neue',Arial,sans-serif; color:var(--ink); }
+
+  .poster{
+    position:fixed; top:0; left:0;   /* keeps print to a single page (no blank page 2) */
+    width:var(--w); height:var(--h);
+    background:var(--bg);
+    margin:0 auto;
+    display:grid;
+    grid-template-rows:
+      auto      /* header        */
+      auto      /* takeaway band */
+      1.05fr    /* centerpiece   */
+      1.25fr    /* supporting    */
+      auto;     /* footer        */
+    padding:0.55in 0.6in 0.45in;
+    gap:0.34in;
+    overflow:hidden;
+  }
+
+  /* ----------------------------- HEADER ----------------------------- */
+  .header{ display:flex; align-items:center; gap:0.4in;
+           border-bottom:6px solid var(--accent); padding-bottom:0.22in; }
+  .header .logos{ display:flex; align-items:center; gap:0.3in; flex:0 0 auto; }
+  .header .logos img{ height:1.05in; width:auto; object-fit:contain; }
+  .header .titles{ flex:1 1 auto; }
+  .venue{ font-size:var(--fs-small); font-weight:700; letter-spacing:.04em;
+          text-transform:uppercase; color:var(--accent); }
+  h1.title{ font-size:var(--fs-title); font-weight:900; line-height:1.02;
+            margin:.06in 0 .1in; }
+  .authors{ font-size:var(--fs-authors); font-weight:700; color:var(--ink); }
+  .affils{ font-size:var(--fs-small); color:var(--muted); margin-top:.04in; }
+
+  /* -------------------------- TAKEAWAY BAND ------------------------- */
+  .takeaway{ display:flex; align-items:center; gap:0.5in;
+             background:linear-gradient(135deg,var(--accent),var(--accent-2));
+             color:var(--band-ink); border-radius:.18in; padding:.5in .6in; }
+  .takeaway .big{ flex:1 1 auto; font-size:var(--fs-takeaway); font-weight:900;
+                  line-height:1.0; letter-spacing:-.01em; }
+  .takeaway .big small{ display:block; font-size:var(--fs-head); font-weight:700;
+                        opacity:.92; margin-top:.12in; line-height:1.08;
+                        letter-spacing:0; }
+  .qr{ flex:0 0 auto; text-align:center; }
+  .qr img{ width:4in; height:4in; background:#fff; padding:.12in; border-radius:.12in; }
+  .qr .cap{ font-size:var(--fs-small); font-weight:700; margin-top:.1in; }
+
+  /* --------------------------- CENTERPIECE -------------------------- */
+  .centerpiece{ background:var(--panel); border-radius:.18in;
+                display:flex; flex-direction:column; padding:.34in .4in; min-height:0; }
+  .centerpiece .figwrap{ flex:1 1 auto; display:flex; align-items:center;
+                         justify-content:center; min-height:0; }
+  .centerpiece img{ max-width:100%; max-height:100%; object-fit:contain; }
+  .caption{ font-size:var(--fs-small); color:var(--muted); margin-top:.18in;
+            text-align:center; }
+  .caption b{ color:var(--ink); }
+
+  /* --------------------------- SUPPORTING --------------------------- */
+  /* LANDSCAPE: change to  grid-template-columns:1fr 1fr 1fr  for wide posters. */
+  .support{ display:grid; grid-template-columns:1fr 1fr; gap:0.4in; min-height:0; }
+  .col{ display:flex; flex-direction:column; gap:.26in; min-height:0; }
+  .card{ background:var(--panel); border-radius:.16in; padding:.3in .34in; }
+  h2{ font-size:var(--fs-head); font-weight:800; color:var(--accent);
+      margin-bottom:.14in; line-height:1.0; }
+  p,li{ font-size:var(--fs-body); line-height:1.28; }
+  ul{ list-style:none; }
+  li{ position:relative; padding-left:.42in; margin:.1in 0; }
+  li::before{ content:""; position:absolute; left:.06in; top:.36em;
+              width:.18in; height:.18in; border-radius:50%;
+              background:var(--accent-2); }
+  .metric{ display:flex; gap:.3in; flex-wrap:wrap; margin-top:.06in; }
+  .metric .m{ flex:1 1 40%; }
+  .metric .num{ font-size:var(--fs-head); font-weight:900; color:var(--accent);
+                line-height:1; }
+  .metric .lab{ font-size:var(--fs-small); color:var(--muted); }
+  .support .figwrap{ display:flex; align-items:center; justify-content:center;
+                     background:#fff; border-radius:.1in; padding:.16in; min-height:0; }
+  .support .figwrap img{ max-width:100%; max-height:3.6in; object-fit:contain; }
+
+  /* ----------------------------- FOOTER ----------------------------- */
+  .footer{ display:flex; gap:.5in; align-items:flex-end;
+           border-top:4px solid var(--accent); padding-top:.2in; }
+  .footer .refs{ flex:1 1 auto; font-size:var(--fs-small); color:var(--muted);
+                 line-height:1.22; }
+  .footer .refs b{ color:var(--ink); }
+  .footer .brand{ flex:0 0 auto; text-align:right; font-size:var(--fs-small);
+                  color:var(--muted); }
+  .footer .brand .big{ font-size:var(--fs-body); font-weight:800; color:var(--accent); }
+</style>
+</head>
+<body>
+<div class="poster">
+
+  <!-- ============================ HEADER ============================ -->
+  <header class="header">
+    <!-- FILL: logos. Add/remove <img>. Delete this block if no logos. -->
+    <div class="logos">
+      <!-- <img src="logo-lab.png" alt="lab"> -->
+      <!-- <img src="logo-univ.png" alt="university"> -->
+    </div>
+    <div class="titles">
+      <div class="venue"><!-- FILL: venue -->ICML 2026 Workshop on Mechanistic Interpretability</div>
+      <h1 class="title" contenteditable="true"><!-- FILL: title -->Sparse Features Mediate Refusal in Chat Models</h1>
+      <div class="authors" contenteditable="true"><!-- FILL: authors -->A. Researcher, B. Coauthor, C. Advisor</div>
+      <div class="affils" contenteditable="true"><!-- FILL: affiliations -->MATS &middot; University of Example &middot; Example AI Safety Lab</div>
+    </div>
+  </header>
+
+  <!-- ========================= TAKEAWAY BAND ======================== -->
+  <section class="takeaway">
+    <div class="big" contenteditable="true">
+      <!-- FILL: ONE plain-language headline finding. Keep it short + bold. -->
+      A single sparse feature controls whether the model refuses — ablate it and refusals drop 88%.
+      <small contenteditable="true"><!-- FILL: one-line elaboration -->
+        We localize refusal to one interpretable direction and steer it causally, with no retraining.
+      </small>
+    </div>
+    <div class="qr">
+      <!-- FILL: QR png from scripts/make_qr.py. Replace src. -->
+      <img src="qr.png" alt="QR to paper"
+           onerror="this.style.background='#fff';this.alt='QR placeholder';">
+      <div class="cap">Scan for the paper</div>
+    </div>
+  </section>
+
+  <!-- ========================== CENTERPIECE ========================= -->
+  <section class="centerpiece">
+    <div class="figwrap">
+      <!-- FILL: the single best main-result / causal / ablation figure. -->
+      <img src="centerpiece.png" alt="centerpiece figure"
+           onerror="this.replaceWith(Object.assign(document.createElement('div'),{style:'color:#9aa0b4;font-size:30pt;font-weight:700',textContent:'[ centerpiece figure → drop centerpiece.png here ]'}))">
+    </div>
+    <div class="caption" contenteditable="true">
+      <!-- FILL: centerpiece caption -->
+      <b>Figure 1.</b> Ablating feature #4711 collapses the refusal direction across 5 model
+      families, while held-out capabilities stay flat.
+    </div>
+  </section>
+
+  <!-- ========================== SUPPORTING ========================== -->
+  <section class="support">
+    <!-- LEFT column: the "silent presenter" — standalone problem + method -->
+    <div class="col">
+      <div class="card">
+        <h2>Problem</h2>
+        <p contenteditable="true"><!-- FILL: 1-2 sentences -->
+          Safety behaviors in chat models are opaque: we don't know <i>where</i> refusal lives
+          or whether it's a single mechanism. That makes it hard to audit or steer.
+        </p>
+      </div>
+      <div class="card">
+        <h2>Method</h2>
+        <ul contenteditable="true"><!-- FILL: 3-4 short bullets -->
+          <li>Train a sparse autoencoder on residual-stream activations.</li>
+          <li>Rank features by causal effect on refusal logits.</li>
+          <li>Validate by ablation + activation steering on held-out prompts.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- RIGHT column: results numbers + a supporting figure -->
+    <div class="col">
+      <div class="card">
+        <h2>Results</h2>
+        <div class="metric" contenteditable="true"><!-- FILL: headline numbers -->
+          <div class="m"><div class="num">-88%</div><div class="lab">refusals after ablation</div></div>
+          <div class="m"><div class="num">&lt;1%</div><div class="lab">capability drop (MMLU)</div></div>
+          <div class="m"><div class="num">5</div><div class="lab">model families generalize</div></div>
+          <div class="m"><div class="num">1</div><div class="lab">feature, fully interpretable</div></div>
+        </div>
+      </div>
+      <div class="card" style="flex:1 1 auto; min-height:0;">
+        <h2>Evidence</h2>
+        <div class="figwrap">
+          <!-- FILL: supporting figure -->
+          <img src="support.png" alt="supporting figure"
+               onerror="this.replaceWith(Object.assign(document.createElement('div'),{style:'color:#9aa0b4;font-size:24pt;font-weight:700',textContent:'[ support.png ]'}))">
+        </div>
+        <div class="caption" contenteditable="true"><b>Figure 2.</b> Dose-response: steering strength vs. refusal rate.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ FOOTER ============================ -->
+  <footer class="footer">
+    <div class="refs" contenteditable="true">
+      <!-- FILL: 3-6 short references -->
+      <b>References.</b>
+      [1] Cunningham et al. Sparse Autoencoders, 2023.
+      [2] Arditi et al. Refusal is mediated by a single direction, 2024.
+      [3] Morrison. The Better Poster, 2019.
+    </div>
+    <div class="brand" contenteditable="true">
+      <div class="big">Scan the QR ↑</div>
+      Code &amp; full paper · contact@example.org
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

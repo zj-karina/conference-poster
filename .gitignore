@@ -1,0 +1,17 @@
+# Generated poster outputs
+poster/
+*.pdf
+*.png
+# keep nothing generated; figures/QRs are produced per-run
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS / editor
+.DS_Store
+*.swp
+.idea/
+.vscode/
