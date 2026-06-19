@@ -4,3 +4,5 @@
 pymupdf>=1.23     # PDF text/figure extraction + render (no poppler needed)
 segno>=1.5        # QR code generation
 Pillow>=9.0       # figure whitespace-trim in fig_to_png.py
+# optional — only for the fal.ai generated-asset path (gen_asset_fal.py):
+# rembg, onnxruntime  # strip Nano Banana Pro's checkerboard -> real transparency

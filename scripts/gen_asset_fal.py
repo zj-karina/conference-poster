@@ -11,7 +11,12 @@ If no key is given, this exits non-zero so the skill falls back to web-sourced a
 Usage:
   FAL_KEY=... python3 gen_asset_fal.py "<subject prompt>" out.png
                        [--resolution 1K|2K|4K] [--aspect 1:1|16:9|9:16|4:3|3:4]
-                       [--n N] [--key <FAL_KEY>] [--no-transparent]
+                       [--n N] [--key <FAL_KEY>] [--no-transparent] [--no-cutout]
+
+Nano Banana Pro tends to render a transparency *checkerboard* instead of real alpha,
+so by default the result is post-processed with rembg (auto-installed) to a clean
+transparent cutout. Pass --no-cutout to keep the raw image. Generate the hero + a few
+supporting poses with the SAME style prefix in the prompt for a cohesive set.
 
 Example:
   gen_asset_fal.py "a majestic fluffy caracal cat, full body, sitting regally,
@@ -38,7 +43,7 @@ def parse(argv):
         print(__doc__, file=sys.stderr); sys.exit(2)
     a = {"prompt": argv[1], "out": argv[2], "resolution": "2K",
          "aspect": "3:4", "n": 1, "key": os.environ.get("FAL_KEY", ""),
-         "transparent": True}
+         "transparent": True, "cutout": True}
     i = 3
     while i < len(argv):
         t = argv[i]
@@ -47,8 +52,28 @@ def parse(argv):
         elif t == "--n":        a["n"] = int(argv[i + 1]); i += 2
         elif t == "--key":      a["key"] = argv[i + 1]; i += 2
         elif t == "--no-transparent": a["transparent"] = False; i += 1
+        elif t == "--no-cutout": a["cutout"] = False; i += 1
         else: print(f"unknown arg: {t}", file=sys.stderr); sys.exit(2)
     return a
+
+
+def cutout_bg(path):
+    """Nano Banana renders a checkerboard instead of true alpha — strip it to real
+    transparency with rembg (auto-installed). No-op if rembg can't be set up."""
+    try:
+        import subprocess as sp, sys as _s
+        try:
+            import rembg  # noqa: F401
+        except ImportError:
+            sp.check_call([_s.executable, "-m", "pip", "install", "--quiet",
+                           "rembg", "onnxruntime"])
+        from rembg import remove
+        from PIL import Image
+        remove(Image.open(path).convert("RGB")).save(path)
+        return True
+    except Exception as e:
+        print(f"  (cutout skipped: {e}; image kept as-is)", file=sys.stderr)
+        return False
 
 
 def main():
@@ -96,6 +121,8 @@ def main():
             timeout=120).read()
         with open(dest, "wb") as f:
             f.write(data)
+        if a["transparent"] and a["cutout"]:
+            cutout_bg(dest)  # strip the rendered checkerboard -> real alpha
         print(f"OK -> {dest}  ({im.get('width','?')}x{im.get('height','?')})")
         saved.append(dest)
     if not saved:

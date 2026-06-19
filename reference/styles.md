@@ -98,10 +98,17 @@ for editorial). Keep body legible from a few feet.
 
 **3. Get themed art and compose HERO-first (the wow factor).** Two sources:
    - **Best — generate it (fal.ai Nano Banana Pro), if the user gave a key.** Bespoke,
-     high-quality, copyright-safe, exactly the subject you want, on a transparent background:
-     `FAL_KEY=… python3 scripts/gen_asset_fal.py "<subject, e.g. a regal fluffy caracal
-     mascot, full body>" hero.png --resolution 2K --aspect 3:4`. Generate the hero + a couple
-     supporting pieces. (The script appends a transparency instruction and outputs PNG.)
+     high-quality, copyright-safe, and — crucially — **cohesive**: this is what makes a poster
+     look tasteful instead of like mismatched stickers. Write ONE strong **style prefix**
+     (e.g. "flat vector kawaii mascot illustration of a caracal, thick rounded outlines, soft
+     cel shading, pastel palette, die-cut sticker") and reuse it across calls, varying only the
+     pose, so the whole set matches:
+     `FAL_KEY=… python3 scripts/gen_asset_fal.py "<style prefix>, sitting regal, full body"
+     gen/hero.png --resolution 2K --aspect 3:4` then again for "walking", "lying in a loaf",
+     "waving". The script auto-strips Nano Banana's checkerboard to real transparency (rembg),
+     so you get clean cutouts. Give each a soft grounding shadow (`filter:drop-shadow(...)`).
+     Photoreal cutouts or mixed art styles read as tacky — prefer one generated illustration
+     style + an atmospheric background tint/gradient.
    - **Fallback — find it on the web** (no key, or generation declined). Web-search
      **transparent PNGs**: `"<theme>" transparent png`, on asset hosts (pngimg.com,
      openclipart.org, Wikimedia Commons, stickpng). `WebFetch` the gallery page to extract
