@@ -72,6 +72,17 @@
     overflow:hidden;
   }
 
+  /* ---------------------- DECORATION LAYER --------------------------
+     For "described" / themed styles (e.g. "Sailor Moon"), fill the
+     .decor div (in <body>) with motif <span> emoji or transparent <img>
+     positioned in the margins/corners. Empty by default so plain posters
+     stay clean. Keep motifs OUT of the text/figure areas — use the page
+     edges and the whitespace beside wide figures. See reference/styles.md.  */
+  .decor{ position:absolute; inset:0; z-index:6; pointer-events:none; overflow:hidden; }
+  .decor span{ position:absolute; line-height:1; }
+  .decor img{ position:absolute; object-fit:contain; }
+  .poster>header,.poster>section,.poster>footer{ position:relative; z-index:1; }
+
   /* ----------------------------- HEADER ----------------------------- */
   .header{ display:flex; align-items:center; gap:0.4in;
            border-bottom:6px solid var(--accent); padding-bottom:0.22in; }
@@ -143,6 +154,17 @@
 </head>
 <body>
 <div class="poster">
+
+  <!-- ====================== DECORATION LAYER ======================= -->
+  <!-- Themed motifs for "described" styles go here. Empty = plain poster.
+       Example (Sailor Moon): position emoji in the margins/corners, e.g.
+         <div class="decor">
+           <span style="top:.3in;left:.4in;font-size:64pt">🌙</span>
+           <span style="bottom:.5in;right:.6in;font-size:56pt;opacity:.9">🎀</span>
+           <span style="top:8in;left:.3in;font-size:48pt;transform:rotate(-12deg)">⭐</span>
+         </div>
+       See reference/styles.md -> "Freeform / described styles". -->
+  <div class="decor"></div>
 
   <!-- ============================ HEADER ============================ -->
   <header class="header">

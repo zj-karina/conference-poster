@@ -54,7 +54,11 @@ question the user already answered in their request. Ask about:
    A wrong size = a wasted print, so always confirm. Fallback: A0 portrait (33.1×46.8 in),
    flagged.
 2. **Style / palette** — offer the named presets in `reference/styles.md` (Indigo default,
-   Crimson, Forest, Slate mono, Ocean/ICML blue, Sunset) and the optional dark band.
+   Crimson, Forest, Slate mono, Ocean/ICML blue, Sunset) and the optional dark band. The
+   user may also **describe a style in their own words** (e.g. "Sailor Moon", "cyberpunk",
+   "vintage botanical") — take it literally: translate the words into a palette + fonts +
+   themed motifs in the `.decor` layer, per the "Freeform / described styles" section of
+   `reference/styles.md`. Theme the chrome, never the data.
 3. **Logos** — ask which org/lab/university logos to include (if any). The user can just
    **name them** — fetch each with `python3 scripts/fetch_logo.py <name|domain|url>
    ./poster/<slug>/logo-<n>.png`. For a bare name, web-search the org's official domain
