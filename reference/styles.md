@@ -44,6 +44,15 @@ High-energy, eye-catching from across the hall.
 --accent:#b23a00; --accent-2:#f5a623; --panel:#fdf4e8; --band-ink:#ffffff;
 ```
 
+## 7. Sailor Moon 🌙
+Playful pink + blue + gold. Use a 3-stop band gradient for the full effect.
+```
+--accent:#e23a7e; --accent-2:#4f6ee0; --panel:#fdeef6; --band-ink:#ffffff;
+/* also add: --gold:#ffcf3f;  and swap the .takeaway background to: */
+/* background:linear-gradient(120deg,#e23a7e 0%,#b25fd0 48%,#4f6ee0 100%);
+   border:.05in solid var(--gold); */
+```
+
 ## Dark takeaway band (modifier, optional)
 Combine with any palette for a bolder hero: make the takeaway band near-black with a
 colored sub-line instead of the gradient. In the `.takeaway` rule swap
