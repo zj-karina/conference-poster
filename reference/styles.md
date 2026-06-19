@@ -122,14 +122,20 @@ for editorial). Keep body legible from a few feet.
    slight `transform:rotate(...)`. A subtle on-theme background tint (from the extracted
    palette) ties it together.
 
-**Where to put a big hero when the layout is content-dense.** The default grid has little
-whitespace, so don't cram a hero into a 1.5 in gap. Instead:
-- **Reserve room:** widen the `.poster` side `padding`, or add a slim outer band, so a tall
-  hero can run down a margin at ~4–6 in wide.
-- **Bleed it:** anchor the hero to a page corner/edge and let part of it run off-canvas
-  (`overflow:hidden` on `.poster` clips cleanly) — big and striking without covering data.
-- Or offer the user a **decoration-forward layout** (slightly smaller content area) in
-  exchange for a full-size hero. State the trade-off; let them choose.
+**RECOMMENDED for themed posters — the decoration-forward layout (gives the reference look).**
+The default grid is too dense for big art, so don't cram heroes into gaps or shrink them into
+tiny stickers. Instead **inset the content and frame it with big perimeter art**, like a
+proper illustrated poster:
+- **Inset the content:** widen `.poster` side `padding` to ~1.6–1.9 in (from 0.6) so there
+  are real left/right margins. The matrix/cards get a bit narrower — that's the trade-off.
+- **Run BIG characters (~3 in) down BOTH margins**, 2–3 per side (top/middle/bottom), each
+  anchored to the edge with `left:-0.5in`/`right:-0.5in` so it **bleeds off the page**
+  (`overflow:hidden` clips cleanly). Mirror one with `transform:scaleX(-1)` for variety.
+  This frames the whole poster the way illustrated reference posters do.
+- Verify the bleeding art overlaps only **margins/card padding, not text** (crop and check
+  the band's text edge and each card's inner text).
+- **Bleed a single hero** at one corner if you want one dominant figure instead of a frame.
+- Mention the small content trade-off and let the user pick — this is the path to the "wow".
 
 **4. Keep content untouched and legible.** Theme the chrome, never the data. Decor must not
 cover text, figures, or numbers — place in true whitespace; if unsure, fewer/larger pieces
