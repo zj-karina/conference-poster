@@ -53,34 +53,54 @@ Playful pink + blue + gold. Use a 3-stop band gradient for the full effect.
    border:.05in solid var(--gold); */
 ```
 
-## Freeform / described styles (user describes a vibe in words)
+## Style discovery (turn ANY description into a real, on-trend design)
 
-When the user describes a style in their own words ("make it Sailor Moon", "cyberpunk
-neon", "vintage botanical"), **don't invent emoji-only decor from memory** — that reads as
-generic AI slop. Instead **research the style on the web** and build it from real assets:
+The input can be **anything**: a named aesthetic ("Sailor Moon", "cyberpunk"), a vibe
+("cozy", "brutalist"), or even **an association with the paper itself** ("my work is about
+weight-space geometry — it feels like cartography / star charts / topographic maps"). Never
+fall back to a few emoji from memory — that reads as generic AI slop. Run this pipeline:
 
-**1. Research the palette (use real, curated colors — cite the source).**
-Web-search e.g. `"<theme>" color palette hex`, `"<theme>" brand colors`, or
-`Pantone <theme> palette`. Prefer curated sources (brand palettes, ColorsWall, SchemeColor,
-coolors, Pantone trend reports) and pull the **actual hex codes**. Set `--accent`,
-`--accent-2`, `--ink`, `--bg`, `--panel`, and the `.takeaway` gradient from them. Note the
-source in your handoff so the user can verify.
+**0. Interpret → concrete visual directions.** If the description is indirect (a topic or
+association), web-search it to turn it into 1–3 concrete aesthetics with signature elements,
+e.g. `"<topic>" visual motifs aesthetic`, `"<association>" design inspiration`,
+`<topic> poster moodboard`. If two strong directions emerge, offer them to the user with
+**AskUserQuestion** (one line each) before committing — otherwise pick the best fit and say so.
+
+**1. Trendy, real palette (cite the source).** Two good ways, prefer whichever gives richer
+color:
+   - **From a reference image:** find an on-aesthetic reference (moodboard, key art, the hero
+     asset you'll use) and run `python3 scripts/extract_palette.py <ref.png> --no-neutrals` —
+     it returns real hex codes by visual weight + role suggestions. This keeps the palette and
+     the art coherent (and genuinely on-trend, since it's pulled from real design).
+   - **From curated sources:** web-search `Pantone <theme> palette`, `"<theme>" color palette
+     hex`, `<theme> brand colors` (ColorsWall, SchemeColor, coolors, Pantone trend reports).
+   Then set `--ink/--accent/--accent-2/--bg/--panel` + the `.takeaway` gradient. Keep text
+   colors dark enough and run `scripts/contrast_check.py` (extracted pastels are pretty but
+   often fail as text — use them for `--bg/--panel` tints, keep a dark `--ink`).
 
 **2. Fonts.** Swap the Google Fonts `<link>` and `body`/heading `font-family` to a pairing
 that fits the vibe (rounded display for cute, mono for techy, serif for classic, condensed
 for editorial). Keep body legible from a few feet.
 
-**3. Find real themed art (the key step).** Web-search for **transparent PNGs** of the
-theme's signature elements (characters, crests, ornaments, props):
-`"<theme>" transparent png`, and good asset hosts (pngimg.com, openclipart.org, Wikimedia
-Commons, stickpng). Use `WebFetch` on the gallery page to extract direct image URLs, then
-download a spread with `scripts/fetch_image.py out.png <url1> <url2> ...` (saves
-`out_1.png`, `out_2.png`, …, preserves transparency). Eyeball a contact sheet, pick the
-best 4–8, and place them as `.decor img` with inline `top/left/right/bottom` + `width` in
-the **whitespace zones**: the header logo slot (left of title), the strip above/below and
-the sides of the (usually wide) centerpiece figure, and the page corners. Vary size and add
-a slight `transform:rotate(...)`. Color emoji (🌈⭐✨) are fine as light *filler between*
-the real images — not the main event.
+**3. Find real themed art and compose HERO-first (the wow factor).** Web-search for
+**transparent PNGs** of the theme's signature elements: `"<theme>" transparent png`, on
+asset hosts (pngimg.com, openclipart.org, Wikimedia Commons, stickpng). `WebFetch` the
+gallery page to extract direct image URLs, then download a spread with
+`scripts/fetch_image.py out.png <url1> <url2> ...` (preserves transparency); eyeball a
+contact sheet. Then compose like a designer, not by sprinkling:
+   - **One HERO image, large** — the single most iconic asset (a character, a group shot, a
+     crest), placed in the biggest available whitespace (beside or above the centerpiece, or
+     a header mascot slot). This carries the theme; make it as big as the whitespace allows
+     without touching text/figures. (A poster reads as "designed" because of one confident
+     hero, not ten small stickers.)
+   - **2–4 supporting pieces, medium**, framing the content in the side/corner whitespace.
+   - **Emoji (🌈⭐✨) only as light filler** between the real images — never the main event.
+   Place each as `.decor img` with inline `top/left/right/bottom` + `width`; vary size and a
+   slight `transform:rotate(...)`. A subtle on-theme background tint (from the extracted
+   palette) ties it together.
+
+If the layout is content-dense (little whitespace), tell the user the hero can only be
+medium unless they accept a more decoration-forward layout (slightly less content area).
 
 **4. Keep content untouched and legible.** Theme the chrome, never the data. Decor must not
 cover text, figures, or numbers — place in true whitespace; if unsure, fewer/larger pieces

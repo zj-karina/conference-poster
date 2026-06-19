@@ -55,13 +55,15 @@ question the user already answered in their request. Ask about:
    flagged.
 2. **Style / palette** — offer the named presets in `reference/styles.md` (Indigo default,
    Crimson, Forest, Slate mono, Ocean/ICML blue, Sunset) and the optional dark band. The
-   user may also **describe a style in their own words** (e.g. "Sailor Moon", "cyberpunk",
-   "vintage botanical") — take it literally and **research it**: web-search a real curated /
-   Pantone palette (cite the source) and real transparent-PNG art for the theme, download the
-   art with `scripts/fetch_image.py`, and place it in the `.decor` layer's whitespace zones —
-   don't settle for generic emoji-only decor. Full process + a worked My Little Pony example
-   in the "Freeform / described styles" section of `reference/styles.md`. Theme the chrome,
-   never the data; mind asset licensing.
+   user may also **describe a style any way they like** — a named aesthetic ("Sailor Moon"),
+   a vibe, or even **an association with the paper** ("my work is about weight-space geometry,
+   it feels like star charts"). Run the **style-discovery pipeline** in `reference/styles.md`:
+   interpret the description into concrete visual directions (web-search; offer 1–2 options via
+   AskUserQuestion if open-ended) → pull a **trendy, real palette** (`scripts/extract_palette.py`
+   from a reference image, or curated/Pantone sources, cite it) → fetch real transparent-PNG art
+   with `scripts/fetch_image.py` and compose **HERO-first** (one big iconic image + a few
+   supporting, emoji only as filler) in the `.decor` layer. Never emoji-only from memory. Then
+   run `scripts/contrast_check.py`. Theme the chrome, never the data; mind asset licensing.
 3. **Logos** — ask which org/lab/university logos to include (if any). The user can just
    **name them** — fetch each with `python3 scripts/fetch_logo.py <name|domain|url>
    ./poster/<slug>/logo-<n>.png`. For a bare name, web-search the org's official domain
@@ -175,6 +177,8 @@ Report to the user:
   (Clearbit + favicon fallback). For a name, web-search the real domain first.
 - `scripts/fetch_image.py` — download themed decoration art (transparent PNG/SVG) by direct
   URL(s) for "described" styles; preserves transparency, resizes sanely.
+- `scripts/extract_palette.py` — pull a real, on-trend color palette (hex + role
+  suggestions) from a reference image / the hero asset, for the style-discovery flow.
 - `scripts/extract_figures.py` — dump embedded images + render pages from a paper PDF
   (PyMuPDF, no poppler), with a manifest, to pick a centerpiece.
 - `scripts/fig_to_png.py` — rasterize one figure (vector PDF page or image) to a
