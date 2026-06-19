@@ -41,25 +41,40 @@ browser) plus the PDF.
 Do these in order. Keep generated files in a working dir like `./poster/<paper-slug>/`
 (create it; never write into the skill folder). Scripts live in this skill's `scripts/`.
 
-### 0. Resolve the venue poster spec (size + orientation)
+### 0. Opening mini-interview (ask first, then build)
 
-This determines the whole layout, so nail it first. See `reference/poster-specs.md`.
+Before building, run a SHORT interview with the **AskUserQuestion** tool to lock the
+look and logistics. Keep it to one batch of questions — don't interrogate. Skip any
+question the user already answered in their request. Ask about:
 
-- If the user gave **explicit dimensions**, use them.
-- If they gave a **venue name**, check the presets table in `reference/poster-specs.md`.
-  If it's there, use it. Otherwise **web-search the official instructions** (queries and
-  source-vetting in that file), extract orientation + max W×H (mind units; convert to
-  inches), and any board/tape/deadline rules.
-- **Confirm the final WIDTH × HEIGHT + orientation with the user before building** — a
-  wrong size means a wasted print. If research is inconclusive, ask, or fall back to A0
-  portrait (33.1 × 46.8 in) and flag the assumption.
+1. **Poster size / venue** — confirm the final WIDTH × HEIGHT + orientation. Resolve it
+   from `reference/poster-specs.md`: use explicit dims if given; else look up the venue
+   in the presets table; else **web-search the official instructions** (queries + source
+   vetting in that file), convert units to inches, and note board/tape/deadline rules.
+   A wrong size = a wasted print, so always confirm. Fallback: A0 portrait (33.1×46.8 in),
+   flagged.
+2. **Style / palette** — offer the named presets in `reference/styles.md` (Indigo default,
+   Crimson, Forest, Slate mono, Ocean/ICML blue, Sunset) and the optional dark band.
+3. **Logos** — ask which org/lab/university logos to include (if any). The user can just
+   **name them** — fetch each with `python3 scripts/fetch_logo.py <name|domain|url>
+   ./poster/<slug>/logo-<n>.png`. For a bare name, web-search the org's official domain
+   first (or a Wikimedia SVG logo URL) and pass that for a clean, high-res result.
+4. *(optional)* anything ambiguous: accent color override, which result is the centerpiece.
 
-### 1. Get the PDF
+Apply the chosen palette by setting the CSS variables in `:root` (values in
+`reference/styles.md`) and drop the fetched logos into the header `.logos` block.
 
-- If given a **URL or arXiv id**: `python3 scripts/fetch_pdf.py <url|id> ./poster/<slug>/paper.pdf`
-  (resolves arXiv/OpenReview to the real PDF; stdlib-only). It prints the local path.
-- If given a **local path**: use it directly.
-- If a download fails (paywall/landing page), tell the user and ask them to drop the PDF in.
+### 1. Get the PDF + real metadata
+
+- **PDF.** If given a **URL or arXiv id**: `python3 scripts/fetch_pdf.py <url|id>
+  ./poster/<slug>/paper.pdf` (resolves arXiv/OpenReview to the real PDF; stdlib-only).
+  If given a **local path**: use it directly. If a download fails (paywall/landing page),
+  ask the user to drop the PDF in.
+- **Authors (important).** If the paper is on **OpenReview**, the PDF is often anonymized
+  but the real author list is public — fetch it:
+  `python3 scripts/fetch_openreview_meta.py <forum-id-or-url>` returns title, **full author
+  list**, and venue. Use these authors verbatim (don't trust an "Anonymous Authors" PDF).
+  For arXiv, the PDF/abs page authors are reliable.
 
 ### 2. Extract content + figures from the PDF
 
@@ -133,6 +148,10 @@ Report to the user:
 - `assets/template.html` — self-contained billboard poster template (inline CSS),
   parametric size (set `:root --w/--h` + `@page`); portrait or landscape.
 - `scripts/fetch_pdf.py` — resolve a preprint URL / arXiv id to a local PDF (stdlib only).
+- `scripts/fetch_openreview_meta.py` — title + full author list + venue from an OpenReview
+  submission (the real authors, even when the PDF is anonymized). Stdlib only.
+- `scripts/fetch_logo.py` — download an org logo as PNG by name / domain / image URL
+  (Clearbit + favicon fallback). For a name, web-search the real domain first.
 - `scripts/extract_figures.py` — dump embedded images + render pages from a paper PDF
   (PyMuPDF, no poppler), with a manifest, to pick a centerpiece.
 - `scripts/fig_to_png.py` — rasterize one figure (vector PDF page or image) to a
@@ -141,5 +160,6 @@ Report to the user:
 - `scripts/export_pdf.sh` — headless-Chrome HTML→PDF at the poster's exact size; verifies
   single page + dimensions (PyMuPDF fallback when poppler is absent).
 - `reference/poster-specs.md` — how to research any venue's spec + a presets table.
+- `reference/styles.md` — named color/style presets for the opening mini-interview.
 - `reference/icml-2026-spec.md` — detailed ICML 2026 workshop spec + logistics (one preset).
 - `reference/design-rules.md` — billboard / Better-Poster design checklist.

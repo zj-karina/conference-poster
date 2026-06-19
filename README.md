@@ -12,8 +12,12 @@ design, and exports:
 - a **self-contained, browser-editable `index.html`**, and
 - an **exact-size print-ready `poster.pdf`** with a QR code to the paper.
 
+It opens with a short **mini-interview** (poster size, color style, logos), pulls the
+**real author list from OpenReview** even when the PDF is anonymized, and can **add org
+logos just from their name** (it looks up the logo for you).
+
 Works for any venue. Ships with presets for common ones (e.g. ICML workshop = portrait
-24×36 in / 61×91 cm).
+24×36 in / 61×91 cm) and several color styles.
 
 ---
 
@@ -70,12 +74,12 @@ Code to "make a conference poster" — it should pick up the `conference-poster`
 
 ## How it works
 
-| Step | What happens | Script |
+| Step | What happens | Script / ref |
 |------|--------------|--------|
-| 0 | Resolve the venue's poster spec (preset or web research), confirm size with you | `reference/poster-specs.md` |
-| 1 | Resolve a preprint URL / arXiv id / OpenReview link → local PDF | `scripts/fetch_pdf.py` |
+| 0 | Mini-interview: confirm size (preset or web research), pick a color style, choose logos | `reference/poster-specs.md`, `reference/styles.md`, `scripts/fetch_logo.py` |
+| 1 | Resolve a preprint URL / arXiv id / OpenReview link → local PDF; fetch real authors from OpenReview | `scripts/fetch_pdf.py`, `scripts/fetch_openreview_meta.py` |
 | 2 | Extract text + figures (vector PDFs rasterized, whitespace-trimmed) | `scripts/fig_to_png.py`, `scripts/extract_figures.py` |
-| 3 | Fill the parametric billboard template at the right size/orientation | `assets/template.html` |
+| 3 | Fill the parametric billboard template at the right size/orientation + style + logos | `assets/template.html` |
 | 4 | Generate the QR code | `scripts/make_qr.py` |
 | 5 | Export to PDF at the exact physical size + verify dimensions | `scripts/export_pdf.sh` |
 
