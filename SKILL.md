@@ -137,6 +137,20 @@ Generate the QR with `python3 scripts/make_qr.py <url> ./poster/<slug>/qr.png` (
 honoring the CSS `@page` size, then checks it's a single page at the expected dimensions.
 If size/page count is wrong, fix `@page`/`:root` to match and re-run.
 
+### 4b. Design review (composes with the Anthropic "Design" plugin)
+
+Before handoff, run a design + accessibility pass on the rendered poster — see
+`reference/design-review.md`.
+- Render a `preview.png` (e.g. `python3 -c "import fitz; fitz.open('poster.pdf')[0]
+  .get_pixmap(matrix=fitz.Matrix(110/72,110/72)).save('preview.png')"`) and look at it.
+- **Always run** `python3 scripts/contrast_check.py ./poster/<slug>/index.html` — it audits
+  the `:root` colors + `.takeaway` gradient stops against WCAG (a vibrant band gradient often
+  fails white text at its lightest stop; darken that stop). Fix failures, re-export, re-check.
+- If the **Design plugin** is installed, invoke its `design-critique` and
+  `accessibility-review` skills on the preview/HTML and apply the high-severity findings
+  (hierarchy, consistency, contrast, legibility). If not, use the distilled checklist in
+  `reference/design-review.md`. Then re-export.
+
 ### 5. Hand off
 
 Report to the user:
@@ -166,9 +180,14 @@ Report to the user:
 - `scripts/fig_to_png.py` — rasterize one figure (vector PDF page or image) to a
   whitespace-trimmed, high-DPI PNG ready for the poster.
 - `scripts/make_qr.py` — QR PNG generator (auto-installs `segno`).
+- `scripts/contrast_check.py` — WCAG 2.1 contrast audit of the poster's palette (parses
+  `:root` + the `.takeaway` gradient); also checks a single fg/bg pair.
 - `scripts/export_pdf.sh` — headless-Chrome HTML→PDF at the poster's exact size; verifies
   single page + dimensions (PyMuPDF fallback when poppler is absent).
 - `reference/poster-specs.md` — how to research any venue's spec + a presets table.
-- `reference/styles.md` — named color/style presets for the opening mini-interview.
+- `reference/styles.md` — named color/style presets + the research-driven "described styles".
+- `reference/design-review.md` — design + accessibility review pass; composes with the
+  Anthropic "Design" plugin (design-critique / accessibility-review) or runs a distilled
+  print-poster checklist standalone.
 - `reference/icml-2026-spec.md` — detailed ICML 2026 workshop spec + logistics (one preset).
 - `reference/design-rules.md` — billboard / Better-Poster design checklist.
