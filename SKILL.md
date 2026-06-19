@@ -20,82 +20,67 @@ skill figures out the required poster size, builds the layout, and exports a PDF
 exact physical size. Output is one self-contained HTML file (editable live in the
 browser) plus the PDF.
 
-## Inputs (ask for whatever is missing — don't block on optional ones)
+## What you require from the user (in this order)
 
-- **The paper** (required), as either:
-  - a **preprint URL** — arXiv (`abs/`, `pdf/`, or bare id), OpenReview, or a direct
-    `.pdf` link; or
-  - a **local PDF path**.
-- **The target venue** (required to size it), as either:
-  - a **conference/workshop name** (e.g. "ICML 2026 workshop", "NeurIPS 2025", "CVPR
-    2026") — the skill researches the spec; or
-  - **explicit dimensions** ("A0 portrait", "48x36 in landscape", "61x91 cm").
-- **The QR target URL** (strongly recommended) — usually the same preprint link. If
-  unknown, leave a placeholder and tell the user to swap it before printing.
-- **Optional:** lab/affiliation logos, accent color (hex), exact author list +
-  affiliations, and which figure is the "centerpiece" (the single best main-result /
-  causal / ablation figure). If not given, infer from the PDF.
+1. **The venue** (FIRST, required): a link to the workshop / conference / paper page, or its
+   name. You then **research the poster requirements** for it (size, orientation, board/tape,
+   print deadline).
+2. **The paper** (required): a **preprint link** (arXiv / OpenReview / direct `.pdf`) **or** an
+   uploaded **PDF** of their paper.
+3. **The style** (interview — see step 0C).
+4. Optional: logos, exact author list, which figure is the centerpiece, QR target URL.
 
 ## Workflow
 
 Do these in order. Keep generated files in a working dir like `./poster/<paper-slug>/`
 (create it; never write into the skill folder). Scripts live in this skill's `scripts/`.
+Use **AskUserQuestion** for the interview; ask in this sequence, don't interrogate, and skip
+anything already given.
 
-### 0. Opening mini-interview (ask first, then build)
+### 0A. Venue → research the poster spec (ask first)
 
-Before building, run a SHORT interview with the **AskUserQuestion** tool to lock the
-look and logistics. Keep it to one batch of questions — don't interrogate. Skip any
-question the user already answered in their request. Ask about:
+Ask for the **workshop / conference / paper link or name**. Resolve its poster spec from
+`reference/poster-specs.md`: presets table first; else **web-search the official
+instructions**, extract orientation + max W×H (convert to inches) + board/tape/deadline rules.
+**Confirm the final WIDTH × HEIGHT + orientation with the user** (a wrong size = a wasted
+print). Fallback: A0 portrait (33.1×46.8 in), flagged.
 
-1. **Poster size / venue** — confirm the final WIDTH × HEIGHT + orientation. Resolve it
-   from `reference/poster-specs.md`: use explicit dims if given; else look up the venue
-   in the presets table; else **web-search the official instructions** (queries + source
-   vetting in that file), convert units to inches, and note board/tape/deadline rules.
-   A wrong size = a wasted print, so always confirm. Fallback: A0 portrait (33.1×46.8 in),
-   flagged.
-2. **Style — first ask the mode: "Clean academic" vs "Themed / fun".** Default to
-   **clean academic** unless the user signals they want a vibe. Clean academic = a sober
-   preset palette (Indigo / Ocean-ICML blue / Slate mono / Crimson), **no `.decor`, no emoji,
-   no slang**, logos only, lots of whitespace (see "Clean academic mode" in
-   `reference/styles.md`). Only if they pick themed/fun do the rest of this step.
-   For **themed/fun**: offer the named presets in `reference/styles.md` (Indigo, Crimson,
-   Forest, Slate mono, Ocean/ICML blue, Sunset, the dark band). The
-   user may also **describe a style any way they like** — a named aesthetic ("Sailor Moon"),
-   a vibe, or even **an association with the paper** ("my work is about weight-space geometry,
-   it feels like star charts"). Run the **style-discovery pipeline** in `reference/styles.md`:
-   interpret the description into concrete visual directions (web-search; offer 1–2 options via
-   AskUserQuestion if open-ended) → pull a **trendy, real palette** (`scripts/extract_palette.py`
-   from a reference image, or curated/Pantone sources, cite it). **How you get + place the art
-   depends on whether a fal.ai key is available — offer it; it is by far the better look:**
+### 0B. Paper
 
-   - **WITH a fal.ai key → "paint-over" flow (preferred; gives the reference-quality look).**
-     Don't hand-place small PNGs. Instead: (a) build a **clean base poster** — normal palette,
-     **no emoji, no decor**, with **roomy empty margins** (set `.poster` padding ~1.4in all
-     round) for art to go into; export it and rasterize to `base.png`. (b) Let Nano Banana Pro
-     paint cohesive, large, integrated decoration into those margins:
-     `scripts/decorate_poster_fal.py base.png decorated.png --theme "<theme>" --resolution 4K`.
-     (c) ⚠️ The image model re-renders everything and **WILL corrupt text/numbers/labels** —
-     so overlay the pixel-exact content on top:
-     `scripts/composite_content.py index.html decorated.png poster_final.png`. It re-renders
-     the clean HTML with a **transparent background** and alpha-composites it over the
-     decoration, so only the real panels/text are opaque and the decoration stays **integrated**
-     in every gap/margin (not a boxed rectangle). (d) Wrap to the print PDF:
-     `scripts/img_to_pdf.py poster_final.png poster.pdf 24 36`. Keep the clean HTML as the
-     editable source. **Always eyeball the result and re-check the matrix/numbers** vs the paper.
-   - **WITHOUT a key (declined / none) → manual decor-layer flow.** Get real transparent PNGs
-     (`scripts/fetch_image.py`) or generated cutouts and compose **HERO-first** (one big iconic
-     image + a few supporting, emoji only as filler) in the `.decor` layer; decoration-forward
-     layout for prominence (see `reference/styles.md`). Never emoji-only from memory.
-   Either way run `scripts/contrast_check.py`. Get the key via AskUserQuestion ("Other" → paste)
-   or `FAL_KEY`; never hard-code or log it. Theme the chrome, never the data; mind licensing.
-3. **Logos** — ask which org/lab/university logos to include (if any). The user can just
-   **name them** — fetch each with `python3 scripts/fetch_logo.py <name|domain|url>
-   ./poster/<slug>/logo-<n>.png`. For a bare name, web-search the org's official domain
-   first (or a Wikimedia SVG logo URL) and pass that for a clean, high-res result.
-4. *(optional)* anything ambiguous: accent color override, which result is the centerpiece.
+Ask for the **preprint link or a PDF**. (Fetched in step 1.)
 
-Apply the chosen palette by setting the CSS variables in `:root` (values in
-`reference/styles.md`) and drop the fetched logos into the header `.logos` block.
+### 0C. Style interview (formal vs informal, then branch)
+
+Ask whether they want it **formal** or **informal / fun** — let them **describe in their own
+words what they want**; if they're unsure, **propose a style** (offer 2–3 concrete ideas, incl.
+a relevant association with their topic). Once they agree, branch:
+
+- **FORMAL.** Ask them to describe the design approximately — **fonts and colors**. Build a
+  clean academic poster: their palette (or a sober preset: Indigo / Ocean-ICML blue / Slate
+  mono / Crimson), the requested fonts, **no `.decor`, no emoji, no slang**, logos only, lots
+  of whitespace ("Clean academic mode" in `reference/styles.md`).
+
+- **INFORMAL / fun.** Ask if they have a **fal.ai API key** (offer it — it gives by far the
+  best result; get it via AskUserQuestion "Other" → paste, or `FAL_KEY`; never hard-code/log it).
+  - **No key → web-preset flow** (like the original Floppa build). Pull a real, trendy palette
+    (`scripts/extract_palette.py` / curated-Pantone, cite it) and **real themed art from the
+    web** (`scripts/fetch_image.py`), and place the images **only where there is no text** —
+    margins / whitespace / beside figures, composed HERO-first (decoration-forward layout in
+    `reference/styles.md`). Never emoji-only from memory.
+  - **Key given → paint-over flow** (best). (a) Build a **clean base poster first** — nice
+    colors, **no decor/emoji**, roomy empty margins (`.poster` padding ~1.4in) — and rasterize
+    it to `base.png`. (b) Hand it to Nano Banana Pro to paint cohesive themed decoration in the
+    user's style: `scripts/decorate_poster_fal.py base.png decorated.png --theme "<their
+    style>" --resolution 4K`. (c) ⚠️ The image model **corrupts text/numbers** — overlay the
+    pixel-exact content back: `scripts/composite_content.py index.html decorated.png
+    poster_final.png` (transparent re-render, decoration stays integrated, data stays exact).
+    (d) Wrap to PDF: `scripts/img_to_pdf.py poster_final.png poster.pdf <W_in> <H_in>`.
+
+### 0D. Logos (optional)
+
+Ask which org/lab logos to include. The user can **name them**; fetch each with
+`python3 scripts/fetch_logo.py <name|domain|url> ./poster/<slug>/logo-<n>.png` (web-search the
+official domain / a Wikimedia SVG for a clean result). Drop them into the header `.logos` block.
 
 ### 1. Get the PDF + real metadata
 
@@ -142,6 +127,10 @@ Copy `assets/template.html` into the working dir as `index.html`, then:
    `--w` / `--h` variables AND the `@page { size: <W> <H> }` rule. Use real units (in/cm).
 2. For **landscape** posters, widen `.support` to 3 columns (noted inline in the template).
 3. Fill the marked `<!-- FILL: ... -->` sections with the paper content.
+4. **Apply the style from step 0C:** set the `:root` palette + fonts; for **formal** and for
+   the **paint-over (informal+key)** flows build this as the *clean* poster (no `.decor`, no
+   emoji; paint-over also uses roomy ~1.4in margins). For **informal without a key**, also
+   place the web-sourced art in the `.decor` layer (HERO-first, only where there's no text).
 
 Design rules to honor (Morrison "Better Poster" + ML-conference norms — see
 `reference/design-rules.md`):
@@ -162,6 +151,10 @@ Generate the QR with `python3 scripts/make_qr.py <url> ./poster/<slug>/qr.png` (
 (pass the target width/height in inches so it verifies the output). Uses headless Chrome
 honoring the CSS `@page` size, then checks it's a single page at the expected dimensions.
 If size/page count is wrong, fix `@page`/`:root` to match and re-run.
+
+**For the paint-over (informal + fal.ai key) flow**, this export is the *clean base*: rasterize
+it to `base.png`, then run the decorate → composite → `img_to_pdf` chain from step 0C to produce
+the final decorated `poster.pdf`.
 
 ### 4b. Design review (composes with the Anthropic "Design" plugin)
 
