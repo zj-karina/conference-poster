@@ -75,11 +75,13 @@ question the user already answered in their request. Ask about:
      paint cohesive, large, integrated decoration into those margins:
      `scripts/decorate_poster_fal.py base.png decorated.png --theme "<theme>" --resolution 4K`.
      (c) ⚠️ The image model re-renders everything and **WILL corrupt text/numbers/labels** —
-     so restore the pixel-exact content on top:
-     `scripts/composite_content.py base.png decorated.png poster_final.png` (uses the same
-     margins). (d) Wrap to the print PDF: `scripts/img_to_pdf.py poster_final.png poster.pdf
-     24 36`. Keep the clean HTML as the editable source. **Always eyeball the result and
-     re-check the matrix/numbers** against the paper after compositing.
+     so overlay the pixel-exact content on top:
+     `scripts/composite_content.py index.html decorated.png poster_final.png`. It re-renders
+     the clean HTML with a **transparent background** and alpha-composites it over the
+     decoration, so only the real panels/text are opaque and the decoration stays **integrated**
+     in every gap/margin (not a boxed rectangle). (d) Wrap to the print PDF:
+     `scripts/img_to_pdf.py poster_final.png poster.pdf 24 36`. Keep the clean HTML as the
+     editable source. **Always eyeball the result and re-check the matrix/numbers** vs the paper.
    - **WITHOUT a key (declined / none) → manual decor-layer flow.** Get real transparent PNGs
      (`scripts/fetch_image.py`) or generated cutouts and compose **HERO-first** (one big iconic
      image + a few supporting, emoji only as filler) in the `.decor` layer; decoration-forward
@@ -206,8 +208,9 @@ Report to the user:
   the rendered checkerboard with rembg; exits non-zero (fall back) if no key.
 - `scripts/decorate_poster_fal.py` — OPTIONAL (preferred themed flow): hand a clean rendered
   poster PNG to Nano Banana Pro (edit) to paint cohesive themed decoration into the margins.
-- `scripts/composite_content.py` — restore the pixel-exact poster content over the decorated
-  image (the edit model corrupts text/numbers — this is mandatory after decorate).
+- `scripts/composite_content.py` — re-render the clean HTML with a transparent background and
+  overlay it on the decorated image, so data stays pixel-exact AND the decoration stays
+  integrated (not boxed). Mandatory after decorate (the edit model corrupts text/numbers).
 - `scripts/img_to_pdf.py` — wrap a full-bleed poster image into a single PDF page at exact size.
 - `scripts/extract_figures.py` — dump embedded images + render pages from a paper PDF
   (PyMuPDF, no poppler), with a manifest, to pick a centerpiece.

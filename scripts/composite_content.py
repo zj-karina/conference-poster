@@ -1,24 +1,26 @@
 #!/usr/bin/env python3
-"""Composite the crisp, correct poster content back over an AI-decorated image.
+"""Composite the crisp, correct poster content back over an AI-decorated image —
+keeping the decoration *integrated* (visible in every gap/margin), not boxed.
 
-Why: the image model (decorate_poster_fal.py) paints beautiful cohesive decoration,
-but it RE-RENDERS the whole image and will silently corrupt text, numbers, figure
-labels — fatal for a scientific poster. So we keep the decoration only in the margins
-and paste the pixel-exact content back on top from the clean render.
+Why: decorate_poster_fal.py paints a beautiful cohesive scene, but the image model
+re-renders everything and WILL corrupt text, numbers and figure labels — fatal for a
+scientific poster. Fix: re-render the clean poster with a TRANSPARENT background and
+overlay it on the decorated image. Only the real ink (band, panels, text, figures) is
+opaque and covers the corrupted content; everywhere else the decoration shows through —
+so it stays integrated, not a hard rectangle.
 
 Usage:
-  python3 composite_content.py <clean_base.png> <decorated.png> <out.png>
-          [--margin-top IN] [--margin-side IN] [--margin-bottom IN]
-          [--w-in W] [--h-in H]
+  python3 composite_content.py <clean.html> <decorated.png> <out.png>
+          [--w-in W] [--h-in H] [--scale S]
 
-Margins must match the clean poster's `.poster` padding (default 1.4 / 1.4 / 1.2 in
-on a 24x36 poster). The inset content rectangle from <clean_base.png> is scaled to the
-decorated image and alpha-composited on top; the painted art remains in the border frame.
-Pillow (auto-installed).
+Needs headless Chrome (same as export). Pillow auto-installed. Output matches the
+decorated image's pixels; wrap to a print PDF afterward with img_to_pdf.py.
 """
 import os
+import re
 import subprocess
 import sys
+import tempfile
 
 
 def _ensure(mod, pip=None):
@@ -29,19 +31,26 @@ def _ensure(mod, pip=None):
         return __import__(mod)
 
 
+def find_chrome():
+    for c in ("google-chrome", "google-chrome-stable", "chromium", "chromium-browser", "chrome"):
+        if subprocess.call(["bash", "-lc", f"command -v {c}"],
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) == 0:
+            return c
+    print("ERROR: no Chrome/Chromium found (needed to render the overlay).", file=sys.stderr)
+    sys.exit(1)
+
+
 def parse(argv):
     if len(argv) < 4:
         print(__doc__, file=sys.stderr); sys.exit(2)
-    a = {"base": argv[1], "dec": argv[2], "out": argv[3],
-         "mt": 1.4, "ms": 1.4, "mb": 1.2, "w": 24.0, "h": 36.0}
+    a = {"html": argv[1], "dec": argv[2], "out": argv[3],
+         "w": 24.0, "h": 36.0, "scale": 2.0}
     i = 4
     while i < len(argv):
         t = argv[i]
-        if t == "--margin-top": a["mt"] = float(argv[i + 1]); i += 2
-        elif t == "--margin-side": a["ms"] = float(argv[i + 1]); i += 2
-        elif t == "--margin-bottom": a["mb"] = float(argv[i + 1]); i += 2
-        elif t == "--w-in": a["w"] = float(argv[i + 1]); i += 2
+        if t == "--w-in": a["w"] = float(argv[i + 1]); i += 2
         elif t == "--h-in": a["h"] = float(argv[i + 1]); i += 2
+        elif t == "--scale": a["scale"] = float(argv[i + 1]); i += 2
         else: print(f"unknown arg: {t}", file=sys.stderr); sys.exit(2)
     return a
 
@@ -50,22 +59,37 @@ def main():
     a = parse(sys.argv)
     _ensure("PIL", "Pillow")
     from PIL import Image
-    base = Image.open(a["base"]).convert("RGBA")
-    dec = Image.open(a["dec"]).convert("RGBA")
-    W, H = a["w"], a["h"]
-    bx, by = base.width / W, base.height / H
-    dx, dy = dec.width / W, dec.height / H
-    # inset content rectangle in inches -> px in each image
-    bl = (int(a["ms"] * bx), int(a["mt"] * by),
-          int((W - a["ms"]) * bx), int((H - a["mb"]) * by))
-    dl = (int(a["ms"] * dx), int(a["mt"] * dy),
-          int((W - a["ms"]) * dx), int((H - a["mb"]) * dy))
-    crop = base.crop(bl).resize((dl[2] - dl[0], dl[3] - dl[1]), Image.LANCZOS)
+
+    html = open(a["html"]).read()
+    # force a transparent background so only the real content is opaque
+    override = ("<style>html,body{background:transparent!important}"
+                ".poster{background:transparent!important}</style>")
+    html_t = html.replace("</head>", override + "\n</head>", 1)
+    d = os.path.dirname(os.path.abspath(a["html"]))
+    tmp = tempfile.NamedTemporaryFile("w", suffix=".html", dir=d, delete=False)
+    tmp.write(html_t); tmp.close()
+
+    css_w, css_h = int(a["w"] * 96), int(a["h"] * 96)   # 96 CSS px/in
+    overlay_png = tmp.name + ".png"
+    chrome = find_chrome()
+    subprocess.run([chrome, "--headless=new", "--disable-gpu", "--no-sandbox",
+                    "--hide-scrollbars", "--default-background-color=00000000",
+                    f"--force-device-scale-factor={a['scale']}",
+                    f"--window-size={css_w},{css_h}",
+                    f"--screenshot={overlay_png}", "file://" + tmp.name],
+                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    os.unlink(tmp.name)
+    if not os.path.exists(overlay_png):
+        print("ERROR: overlay screenshot failed.", file=sys.stderr); sys.exit(1)
+
+    ov = Image.open(overlay_png).convert("RGBA")
+    dec = Image.open(a["dec"]).convert("RGBA").resize(ov.size, Image.LANCZOS)
     out = dec.copy()
-    out.alpha_composite(crop, (dl[0], dl[1]))
+    out.alpha_composite(ov)
     out.convert("RGB").save(a["out"])
+    os.unlink(overlay_png)
     print(f"OK -> {a['out']}  ({out.width}x{out.height})  "
-          "(crisp content restored over decoration)")
+          "(crisp content over integrated decoration)")
 
 
 if __name__ == "__main__":
