@@ -46,7 +46,7 @@ It will confirm the poster size with you, then produce the files under
 ### Option A — one-line installer (recommended)
 
 ```bash
-git clone https://github.com/<your-username>/conference-poster.git
+git clone https://github.com/zj-karina/conference-poster.git
 cd conference-poster
 ./install.sh
 ```
@@ -59,7 +59,7 @@ cd conference-poster
 Clone (or copy) the repo straight into your Claude Code skills directory:
 
 ```bash
-git clone https://github.com/<your-username>/conference-poster.git \
+git clone https://github.com/zj-karina/conference-poster.git \
   ~/.claude/skills/conference-poster
 ```
 
