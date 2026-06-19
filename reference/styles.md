@@ -56,41 +56,59 @@ Playful pink + blue + gold. Use a 3-stop band gradient for the full effect.
 ## Freeform / described styles (user describes a vibe in words)
 
 When the user describes a style in their own words ("make it Sailor Moon", "cyberpunk
-neon", "vintage botanical", "minimal Scandinavian"), don't fall back to a preset —
-**translate the description into four concrete choices and build it literally:**
+neon", "vintage botanical"), **don't invent emoji-only decor from memory** — that reads as
+generic AI slop. Instead **research the style on the web** and build it from real assets:
 
-1. **Palette** — set `--accent`, `--accent-2`, `--panel`, `--bg`, `--ink`, and the
-   `.takeaway` background gradient to colors that match the vibe.
-2. **Fonts** — swap the Google Fonts `<link>` and `body`/heading `font-family` to a pairing
-   that fits (e.g. rounded display for cute, mono for techy, serif for classic). Keep body
-   legible from a few feet.
-3. **Motifs** — pick a small set of theme emoji/symbols (4–8) and scatter them in the
-   `.decor` layer: cluster a few in 2–3 corners, sprinkle the rest along the page edges and
-   in the whitespace beside wide figures. Vary `font-size`, `opacity` (~0.5–1.0), and
-   `transform:rotate(...)`. Keep them OUT of text and figure boxes. Color emoji render in
-   headless Chrome (Noto Color Emoji).
-4. **Optional themed images** — for richer decor (a character, a crest), place transparent
-   PNGs via `.decor img` in corners, or fetch one with `scripts/fetch_logo.py <image-url>
-   out.png` (it accepts any direct image URL). ⚠️ Watch copyright/print rights for
-   character art — prefer the user's own assets or clearly-licensed clip-art; emoji/CSS
-   decor is always safe.
+**1. Research the palette (use real, curated colors — cite the source).**
+Web-search e.g. `"<theme>" color palette hex`, `"<theme>" brand colors`, or
+`Pantone <theme> palette`. Prefer curated sources (brand palettes, ColorsWall, SchemeColor,
+coolors, Pantone trend reports) and pull the **actual hex codes**. Set `--accent`,
+`--accent-2`, `--ink`, `--bg`, `--panel`, and the `.takeaway` gradient from them. Note the
+source in your handoff so the user can verify.
 
-Keep the **content** untouched and accurate — theme the chrome, not the data. Don't let
-decoration reduce legibility; if in doubt, fewer, larger motifs in the margins.
+**2. Fonts.** Swap the Google Fonts `<link>` and `body`/heading `font-family` to a pairing
+that fits the vibe (rounded display for cute, mono for techy, serif for classic, condensed
+for editorial). Keep body legible from a few feet.
 
-### Worked example — "Sailor Moon" 🌙
-- Palette: `--accent:#ff1e9c; --accent-2:#ff7ad9; --panel:#ffe1f4; --bg:#fff0fa;
-  --ink:#6b1145; --gold:#ffd23f;` band gradient
-  `linear-gradient(120deg,#ff1e9c,#ff5cc4 50%,#ff9ad5)` with a dashed `--gold` border.
-- Fonts: rounded display — `Baloo 2` / `Fredoka` (cute, bubbly).
-- Motifs: 🌙 ⭐ 💖 🎀 ✨ 👑 🐈‍⬛ 🪄 — clustered top-left + bottom-right, sprinkled along edges
-  and beside the (wide) centerpiece figure.
-- Tone (optional): playful section titles ("the drama / the recipe / the receipts / the
-  proof") and copy — only if the user wants the humor, not by default.
+**3. Find real themed art (the key step).** Web-search for **transparent PNGs** of the
+theme's signature elements (characters, crests, ornaments, props):
+`"<theme>" transparent png`, and good asset hosts (pngimg.com, openclipart.org, Wikimedia
+Commons, stickpng). Use `WebFetch` on the gallery page to extract direct image URLs, then
+download a spread with `scripts/fetch_image.py out.png <url1> <url2> ...` (saves
+`out_1.png`, `out_2.png`, …, preserves transparency). Eyeball a contact sheet, pick the
+best 4–8, and place them as `.decor img` with inline `top/left/right/bottom` + `width` in
+the **whitespace zones**: the header logo slot (left of title), the strip above/below and
+the sides of the (usually wide) centerpiece figure, and the page corners. Vary size and add
+a slight `transform:rotate(...)`. Color emoji (🌈⭐✨) are fine as light *filler between*
+the real images — not the main event.
 
-Other quick mappings: *cyberpunk* → near-black bg, neon `#39ff14`/`#ff00e6`, mono font,
-⚡🛰️🌃 motifs. *Botanical* → cream bg, forest green + terracotta, serif, 🌿🍃🌸. *Scandi
-minimal* → white bg, one muted slate accent, no motifs, lots of whitespace.
+**4. Keep content untouched and legible.** Theme the chrome, never the data. Decor must not
+cover text, figures, or numbers — place in true whitespace; if unsure, fewer/larger pieces
+in the margins. Render a preview and nudge positions until clean.
+
+⚠️ **Rights:** themed/character art is usually copyrighted. `fetch_image.py` downloads what
+you point it at; using it for a personal conference poster is one thing, redistributing is
+another. Prefer the user's own assets, public-domain/CC, or clearly-licensed clip-art, and
+flag this to the user.
+
+### Worked example — "My Little Pony" 🦄 (research-driven, the right way)
+- Palette (researched, ColorsWall #4144 / SchemeColor MLP): `--accent:#822b99;
+  --accent-2:#ec058e; --ink:#351858; --bg:#f8f1fb; --panel:#f1e9f8;` band gradient
+  `linear-gradient(120deg,#822b99,#ec058e 52%,#13b5d0)`, dashed white border.
+- Fonts: `Quicksand` (body) + `Baloo 2` (display).
+- Art: real transparent character PNGs from pngimg.com (`/uploads/my_pony/…`) — Twilight in
+  the header logo slot; Rainbow Dash + Sunset in the strip above the matrix; Pinkie + Rarity
+  flanking it. Emoji 🌈⭐💜 as filler. (See `~/poster/mzgEXubB5M/` for the built result.)
+
+### Earlier example — "Sailor Moon" 🌙 (emoji-only; acceptable fallback when no assets found)
+- Palette: `--accent:#ff1e9c; --accent-2:#ff7ad9; --panel:#ffe1f4; --bg:#fff0fa;` gradient
+  `linear-gradient(120deg,#ff1e9c,#ff5cc4 50%,#ff9ad5)`, dashed `--gold` border; `Baloo 2`.
+- Motifs: 🌙⭐💖🎀✨👑🐈‍⬛🪄 in corners/edges/figure sides. Use this lighter approach only if
+  real transparent art can't be sourced or licensed.
+
+Quick palette starting points (still verify per theme): *cyberpunk* → near-black bg, neon
+`#39ff14`/`#ff00e6`, mono font. *Botanical* → cream bg, forest green + terracotta, serif.
+*Scandi minimal* → white bg, one muted slate accent, no motifs, lots of whitespace.
 Combine with any palette for a bolder hero: make the takeaway band near-black with a
 colored sub-line instead of the gradient. In the `.takeaway` rule swap
 `background:linear-gradient(...)` for `background:#14151a;` and keep `--band-ink:#ffffff`.

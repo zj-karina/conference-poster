@@ -56,9 +56,12 @@ question the user already answered in their request. Ask about:
 2. **Style / palette** — offer the named presets in `reference/styles.md` (Indigo default,
    Crimson, Forest, Slate mono, Ocean/ICML blue, Sunset) and the optional dark band. The
    user may also **describe a style in their own words** (e.g. "Sailor Moon", "cyberpunk",
-   "vintage botanical") — take it literally: translate the words into a palette + fonts +
-   themed motifs in the `.decor` layer, per the "Freeform / described styles" section of
-   `reference/styles.md`. Theme the chrome, never the data.
+   "vintage botanical") — take it literally and **research it**: web-search a real curated /
+   Pantone palette (cite the source) and real transparent-PNG art for the theme, download the
+   art with `scripts/fetch_image.py`, and place it in the `.decor` layer's whitespace zones —
+   don't settle for generic emoji-only decor. Full process + a worked My Little Pony example
+   in the "Freeform / described styles" section of `reference/styles.md`. Theme the chrome,
+   never the data; mind asset licensing.
 3. **Logos** — ask which org/lab/university logos to include (if any). The user can just
    **name them** — fetch each with `python3 scripts/fetch_logo.py <name|domain|url>
    ./poster/<slug>/logo-<n>.png`. For a bare name, web-search the org's official domain
@@ -156,6 +159,8 @@ Report to the user:
   submission (the real authors, even when the PDF is anonymized). Stdlib only.
 - `scripts/fetch_logo.py` — download an org logo as PNG by name / domain / image URL
   (Clearbit + favicon fallback). For a name, web-search the real domain first.
+- `scripts/fetch_image.py` — download themed decoration art (transparent PNG/SVG) by direct
+  URL(s) for "described" styles; preserves transparency, resizes sanely.
 - `scripts/extract_figures.py` — dump embedded images + render pages from a paper PDF
   (PyMuPDF, no poppler), with a manifest, to pick a centerpiece.
 - `scripts/fig_to_png.py` — rasterize one figure (vector PDF page or image) to a

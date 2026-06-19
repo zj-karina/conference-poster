@@ -61,7 +61,7 @@ Output is written to `./poster/<paper-slug>/`.
 
 | Step | Action | Script / reference |
 |------|--------|--------------------|
-| 0 | Interview: confirm size (preset or research), pick a style, choose logos | `reference/poster-specs.md`, `reference/styles.md`, `scripts/fetch_logo.py` |
+| 0 | Interview: confirm size (preset or research), pick a style (preset or a described theme — researches a real palette + themed art), choose logos | `reference/poster-specs.md`, `reference/styles.md`, `scripts/fetch_logo.py`, `scripts/fetch_image.py` |
 | 1 | Resolve preprint URL / arXiv id / OpenReview link to a local PDF; fetch authors | `scripts/fetch_pdf.py`, `scripts/fetch_openreview_meta.py` |
 | 2 | Extract text and figures (vector PDFs rasterized and trimmed) | `scripts/fig_to_png.py`, `scripts/extract_figures.py` |
 | 3 | Fill the parametric template at the target size, style, and logos | `assets/template.html` |
