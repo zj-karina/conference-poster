@@ -65,17 +65,27 @@ question the user already answered in their request. Ask about:
    it feels like star charts"). Run the **style-discovery pipeline** in `reference/styles.md`:
    interpret the description into concrete visual directions (web-search; offer 1–2 options via
    AskUserQuestion if open-ended) → pull a **trendy, real palette** (`scripts/extract_palette.py`
-   from a reference image, or curated/Pantone sources, cite it) → get themed art and compose
-   **HERO-first** (one big iconic image + a few supporting, emoji only as filler) in the
-   `.decor` layer. Never emoji-only from memory. Then run `scripts/contrast_check.py`. Theme the
-   chrome, never the data; mind asset licensing.
-   - **Offer fal.ai (better quality).** As part of this question, tell the user that for
-     **noticeably higher-quality, bespoke, copyright-safe** themed art you can use **fal.ai's
-     Nano Banana Pro** (Gemini 3 Pro Image) — if they paste a fal.ai API key, generate assets
-     with `scripts/gen_asset_fal.py "<subject>" out.png` (transparent PNG). **If they decline
-     or have no key, proceed without it** using web-sourced art (`scripts/fetch_image.py`). Get
-     the key via AskUserQuestion (they pick "Other" and paste it) or ask them to set `FAL_KEY`;
-     never hard-code or log it.
+   from a reference image, or curated/Pantone sources, cite it). **How you get + place the art
+   depends on whether a fal.ai key is available — offer it; it is by far the better look:**
+
+   - **WITH a fal.ai key → "paint-over" flow (preferred; gives the reference-quality look).**
+     Don't hand-place small PNGs. Instead: (a) build a **clean base poster** — normal palette,
+     **no emoji, no decor**, with **roomy empty margins** (set `.poster` padding ~1.4in all
+     round) for art to go into; export it and rasterize to `base.png`. (b) Let Nano Banana Pro
+     paint cohesive, large, integrated decoration into those margins:
+     `scripts/decorate_poster_fal.py base.png decorated.png --theme "<theme>" --resolution 4K`.
+     (c) ⚠️ The image model re-renders everything and **WILL corrupt text/numbers/labels** —
+     so restore the pixel-exact content on top:
+     `scripts/composite_content.py base.png decorated.png poster_final.png` (uses the same
+     margins). (d) Wrap to the print PDF: `scripts/img_to_pdf.py poster_final.png poster.pdf
+     24 36`. Keep the clean HTML as the editable source. **Always eyeball the result and
+     re-check the matrix/numbers** against the paper after compositing.
+   - **WITHOUT a key (declined / none) → manual decor-layer flow.** Get real transparent PNGs
+     (`scripts/fetch_image.py`) or generated cutouts and compose **HERO-first** (one big iconic
+     image + a few supporting, emoji only as filler) in the `.decor` layer; decoration-forward
+     layout for prominence (see `reference/styles.md`). Never emoji-only from memory.
+   Either way run `scripts/contrast_check.py`. Get the key via AskUserQuestion ("Other" → paste)
+   or `FAL_KEY`; never hard-code or log it. Theme the chrome, never the data; mind licensing.
 3. **Logos** — ask which org/lab/university logos to include (if any). The user can just
    **name them** — fetch each with `python3 scripts/fetch_logo.py <name|domain|url>
    ./poster/<slug>/logo-<n>.png`. For a bare name, web-search the org's official domain
@@ -192,8 +202,13 @@ Report to the user:
 - `scripts/extract_palette.py` — pull a real, on-trend color palette (hex + role
   suggestions) from a reference image / the hero asset, for the style-discovery flow.
 - `scripts/gen_asset_fal.py` — OPTIONAL: generate bespoke transparent-PNG themed art via
-  fal.ai Nano Banana Pro (Gemini 3 Pro Image) when the user supplies a `FAL_KEY`; exits
-  non-zero (so you fall back to web-sourced art) if no key.
+  fal.ai Nano Banana Pro (Gemini 3 Pro Image) when the user supplies a `FAL_KEY`; auto-cuts
+  the rendered checkerboard with rembg; exits non-zero (fall back) if no key.
+- `scripts/decorate_poster_fal.py` — OPTIONAL (preferred themed flow): hand a clean rendered
+  poster PNG to Nano Banana Pro (edit) to paint cohesive themed decoration into the margins.
+- `scripts/composite_content.py` — restore the pixel-exact poster content over the decorated
+  image (the edit model corrupts text/numbers — this is mandatory after decorate).
+- `scripts/img_to_pdf.py` — wrap a full-bleed poster image into a single PDF page at exact size.
 - `scripts/extract_figures.py` — dump embedded images + render pages from a paper PDF
   (PyMuPDF, no poppler), with a manifest, to pick a centerpiece.
 - `scripts/fig_to_png.py` — rasterize one figure (vector PDF page or image) to a
