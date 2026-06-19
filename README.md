@@ -33,8 +33,8 @@ and several color styles.
 Clone and run the installer:
 
 ```bash
-git clone https://github.com/zj-karina/conference-poster.git
-cd conference-poster
+git clone https://github.com/zj-karina/my-little-poster.git
+cd my-little-poster
 ./install.sh
 ```
 
@@ -44,7 +44,7 @@ keeps it current. Use `--copy` to copy instead of symlink.
 Manual alternative, clone directly into the skills directory:
 
 ```bash
-git clone https://github.com/zj-karina/conference-poster.git \
+git clone https://github.com/zj-karina/my-little-poster.git \
   ~/.claude/skills/conference-poster
 ```
 
